@@ -151,8 +151,8 @@ module.exports = {
 	site: {
 		blockTxPageSize:20,
 		addressTxPageSize:20,
-        addressTxLimit:960,  // TODO FIXME nedded pagination for start stop in command getAddressTxids
-		txMaxInput:480,       // TODO FIXME function getRawTransactionsWithInputs(txids, maxInputs=-1)
+        addressTxLimit:1000,  // TODO FIXME nedded pagination for start stop in command getAddressTxids
+		txMaxInput:500,       // TODO FIXME function getRawTransactionsWithInputs(txids, maxInputs=-1)
 		browseBlocksPageSize:20,
 		addressPage:{
 			txOutputMaxDefaultDisplay:10

@@ -56,9 +56,9 @@ if (config.noInmemoryRpcCache) {
 	txCache = noopCache;
 
 } else {
-	miscCache = createMemoryLruCache(LRU(120000));
-	blockCache = createMemoryLruCache(LRU(120000));
-    txCache = createMemoryLruCache(LRU(1200000));
+	miscCache = createMemoryLruCache(LRU(1000));
+	blockCache = createMemoryLruCache(LRU(1000));
+    txCache = createMemoryLruCache(LRU(4000));     // ~ blockHeing/addressTxLimit 
 }
 
 if (redisCache.active) {
@@ -177,7 +177,7 @@ function getAddressTxids(address,start,end) {
 		return rpcApi.getAddressTxids(address,start,end);
 	};
 
-	return tryCacheThenRpcApi(txCache, "getAddressTxids-" + address + "-" + start + "-" + end, 120000, rpcApiFunction);
+	return tryCacheThenRpcApi(txCache, "getAddressTxids-" + address + "-" + start + "-" + end, 120000*6, rpcApiFunction);
 }
 
      
@@ -251,7 +251,7 @@ function getTxCountStats(dataPtCount, blockStart, blockEnd) {
 
 function getPeerSummary() {
 	return new Promise(function(resolve, reject) {
-		tryCacheThenRpcApi(miscCache, "getpeerinfo", 1000, rpcApi.getPeerInfo).then(function(getpeerinfo) {
+		tryCacheThenRpcApi(miscCache, "getpeerinfo", 240000, rpcApi.getPeerInfo).then(function(getpeerinfo) {
 			var result = {};
 			result.getpeerinfo = getpeerinfo;
 
@@ -332,7 +332,7 @@ function getPeerSummary() {
 
 function getMempoolDetails(start, count) {
 	return new Promise(function(resolve, reject) {
-		tryCacheThenRpcApi(miscCache, "getRawMempool", 1000, rpcApi.getRawMempool).then(function(result) {
+		tryCacheThenRpcApi(miscCache, "getRawMempool", 4000, rpcApi.getRawMempool).then(function(result) {
 			var txids = [];
 			var txidIndex = 0;
 			for (var txid in result) {
@@ -395,7 +395,7 @@ function getMempoolDetails(start, count) {
 
 function getMempoolStats() {
 	return new Promise(function(resolve, reject) {
-		tryCacheThenRpcApi(miscCache, "getRawMempool", 5000, rpcApi.getRawMempool).then(function(result) {
+		tryCacheThenRpcApi(miscCache, "getRawMempool", 4000, rpcApi.getRawMempool).then(function(result) {
 			var maxFee = 0;
 			var maxFeePerByte = 0;
 			var maxAge = 0;
@@ -759,7 +759,7 @@ function getBlockByHashWithTransactions(blockHash, txLimit, txOffset) {
 
 function getHelp() {
 	return new Promise(function(resolve, reject) {
-		tryCacheThenRpcApi(miscCache, "getHelp", 3600000, rpcApi.getHelp).then(function(helpContent) {
+		tryCacheThenRpcApi(miscCache, "getHelp", 3600000*24, rpcApi.getHelp).then(function(helpContent) {
 			var lines = helpContent.split("\n");
 			var sections = [];
 
@@ -795,7 +795,7 @@ function getRpcMethodHelp(methodName) {
 	};
 
 	return new Promise(function(resolve, reject) {
-		tryCacheThenRpcApi(miscCache, "getHelp-" + methodName, 3600000, rpcApiFunction).then(function(helpContent) {
+		tryCacheThenRpcApi(miscCache, "getHelp-" + methodName, 3600000*24, rpcApiFunction).then(function(helpContent) {
 			var output = {};
 			output.string = helpContent;
 
