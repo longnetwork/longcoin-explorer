@@ -56,9 +56,9 @@ if (config.noInmemoryRpcCache) {
 	txCache = noopCache;
 
 } else {
-	miscCache = createMemoryLruCache(LRU(50));
-	blockCache = createMemoryLruCache(LRU(50));
-	txCache = createMemoryLruCache(LRU(200));
+	miscCache = createMemoryLruCache(LRU(120000));
+	blockCache = createMemoryLruCache(LRU(120000));
+    txCache = createMemoryLruCache(LRU(1200000));
 }
 
 if (redisCache.active) {
@@ -149,7 +149,7 @@ function getNetTotals() {
 }
 
 function getMempoolInfo() {
-	return tryCacheThenRpcApi(miscCache, "getMempoolInfo", 1000, rpcApi.getMempoolInfo);
+	return tryCacheThenRpcApi(miscCache, "getMempoolInfo", 2000, rpcApi.getMempoolInfo);
 }
 
 function getMiningInfo() {
@@ -172,12 +172,12 @@ function getAddressBalance(address) {
 		return rpcApi.getAddressBalance(address);
 	});
 }
-function getAddressTxids(address) {
+function getAddressTxids(address,start,end) {
 	var rpcApiFunction = function() {
-		return rpcApi.getAddressTxids(address);
+		return rpcApi.getAddressTxids(address,start,end);
 	};
 
-	return tryCacheThenRpcApi(txCache, "getAddressTxids-" + address, 120000, rpcApiFunction);
+	return tryCacheThenRpcApi(txCache, "getAddressTxids-" + address + "-" + start + "-" + end, 120000, rpcApiFunction);
 }
 
      
@@ -646,7 +646,7 @@ function getRawTransactionsWithInputs(txids, maxInputs=-1) {
 			var maxInputsTracked = config.site.txMaxInput;
 			
 			if (maxInputs <= 0) {
-				maxInputsTracked = 1000000;
+				maxInputsTracked = 920; //1000000; // FIXME
 
 			} else if (maxInputs > 0) {
 				maxInputsTracked = maxInputs;

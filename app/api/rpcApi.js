@@ -106,8 +106,8 @@ function getAddressBalance(address) {
 	return getRpcDataWithParams({method:"getaddressbalance", parameters:[{"addresses": [address]}]});
 }
 
-function getAddressTxids(address) {
-	return getRpcDataWithParams({method:"getaddresstxids", parameters:[{"addresses": [address]}]});
+function getAddressTxids(address, start, end) {
+	return getRpcDataWithParams({method:"getaddresstxids", parameters:[{ "addresses": [address], "start": (start!=null) ? start : null , "end": (end!=null) ? end : null }]});
 }
 
 function getRawTransaction(txid) {

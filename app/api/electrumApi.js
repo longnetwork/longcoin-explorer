@@ -118,10 +118,10 @@ function runOnAllServers(f) {
 	});
 }
 
-function getAddressTxids(addrScripthash,address) {
+function getAddressTxids(addrScripthash,address, start, end) {
 	return new Promise(function(resolve, reject) {
             if(global.electrumStandalone ) { // RPC command getaddresstxids
-                   rpc.getAddressTxids(address).then( (result) => {
+                   rpc.getAddressTxids(address, start, end).then( (result) => {
             
                     if (result == null) reject(result);
                     else { // ElectrumX result

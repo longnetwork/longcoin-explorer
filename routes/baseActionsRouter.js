@@ -166,48 +166,10 @@ router.get("/totalbc", function(req, res, next) {
 
         res.send(utils.formatCurrencyAmount(blockreward*getblockchaininfo.blocks,req.session.currencyFormatType));
         
-
-	/*	coreApi.getNetworkInfo().then(function(getnetworkinfo) {
-			res.locals.getnetworkinfo = getnetworkinfo;
-
-			coreApi.getUptimeSeconds().then(function(uptimeSeconds) {
-				res.locals.uptimeSeconds = uptimeSeconds;
-
-				coreApi.getNetTotals().then(function(getnettotals) {
-					res.locals.getnettotals = getnettotals;
-
-					res.render("node-status");
-
-					next();
-
-				}).catch(function(err) {
-					res.locals.userMessage = "Error getting node status: (id=0), err=" + err;
-
-					res.render("node-status");
-
-					next();
-				});
-			}).catch(function(err) {
-				res.locals.userMessage = "Error getting node status: (id=1), err=" + err;
-
-				res.render("node-status");
-
-				next();
-			});
-		}).catch(function(err) {
-			res.locals.userMessage = "Error getting node status: (id=2), err=" + err;
-
-			res.render("node-status");
-
-			next();
-		});
-
-    */
-        
 	}).catch(function(err) {
 		res.locals.userMessage = "Error getting node status: (id=3), err=" + err;
 
-		res.render("totalbc");
+        res.render("node-status"); // FIXME nedded own page for render "totalbc" or not ?
 
 		next();
 	});
@@ -692,6 +654,7 @@ router.get("/address/:address", function(req, res, next) {
                 
 		var promises = [];
 		if (global.electrumApi) {
+            
 			var addrScripthash = hexEnc.stringify(sha256(hexEnc.parse(validateaddressResult.scriptPubKey)));
 			addrScripthash = addrScripthash.match(/.{2}/g).reverse().join("");
 
@@ -713,128 +676,139 @@ router.get("/address/:address", function(req, res, next) {
 				});
 			}));
 
-			promises.push(new Promise(function(resolve, reject) {
-				electrumApi.getAddressTxids(addrScripthash,address).then(function(result) {
-					var txidResult = null;
 
-					if (result.conflictedResults) {
-						res.locals.conflictedTxidResults = true;
 
-						txidResult = result.conflictedResults[0];
+            promises.push(new Promise(function(resolve, reject) {
+                coreApi.getBlockchainInfo().then(async function(getblockchaininfo) {
+                    res.locals.getblockchaininfo = getblockchaininfo;
+                    res.locals.blockCount = getblockchaininfo.blocks;
 
-					} else if (result.result != null) {
-						txidResult = result;
-					}
+                    const blockCount = getblockchaininfo.blocks; 
+                    const txLimit = config.site.addressTxLimit;
+                    const maxBlockWeight= global.coinConfig.maxBlockWeight;
 
-					res.locals.electrumHistory = txidResult;
+                    var txidResult = {result: []};
+                    var txids = [];
+                    var blockHeightsByTxid = {};
+                    try {
+                        let txcnt=0;
+                        for(let cnt=blockCount; cnt>=1; cnt-=(txLimit+1)) { // min blocks
+                            
+                            let start=cnt-txLimit; if(start<1) start=1;
+                            let end=cnt;
+                            
+                            let result= await electrumApi.getAddressTxids(addrScripthash,address,start,end);
+                            result = (result) ? result.result : null;
+                            
+                            if (result) {
+                                if(result.length>0) {
+                                    txcnt+=result.length; // find blocks with transactions for address
+                                    txidResult.result.unshift(...result);
+                                }
+                            }
 
-					var txids = [];
-					var blockHeightsByTxid = {};
+                            if(txcnt>=txLimit) break;
+                        }
+                        
+                        for (var i = 0; i < txidResult.result.length; i++) {
+                            txids.push(txidResult.result[i].tx_hash);
+                            blockHeightsByTxid[txidResult.result[i].tx_hash] = txidResult.result[i].height; // FIXME undefined
+                        }
 
-					if (txidResult) {
-						for (var i = 0; i < txidResult.result.length; i++) {
-							txids.push(txidResult.result[i].tx_hash);
-							blockHeightsByTxid[txidResult.result[i].tx_hash] = txidResult.result[i].height;
-						}
-					}
+                        res.locals.electrumHistory = txidResult;
 
-					if (sort == "desc") {
-						txids = txids.reverse();
-					}
+                        if (sort == "desc") {
+                            txids = txids.reverse();
+                        }
 
-					res.locals.txids = txids;
+                        res.locals.txids = txids;
 
-					var pagedTxids = [];
-					for (var i = offset; i < (offset + limit); i++) {
-						if (txids.length > i) {
-							pagedTxids.push(txids[i]);
-						}
-					}
+                        var pagedTxids = [];
+                        for (var i = offset; i < (offset + limit); i++) {
+                            if (txids.length > i) {
+                                pagedTxids.push(txids[i]);
+                            }
+                        }
 
-					if (txidResult && txidResult.result != null) {
-						// since we always request the first txid (to determine "first seen" info for the address),
-						// remove it for proper paging
-						pagedTxids.unshift(txidResult.result[0].tx_hash);
-					}
+                        if (txidResult && txidResult.result != null) {
+                            // since we always request the first txid (to determine "first seen" info for the address),
+                            // remove it for proper paging
+                            pagedTxids.unshift(txidResult.result[0].tx_hash);
+                        }
 
-					coreApi.getRawTransactionsWithInputs(pagedTxids).then(function(rawTxResult) {
-						// first result is always the earliest tx, but doesn't fit into the current paging;
-						// store it as firstSeenTransaction then remove from list
-						res.locals.firstSeenTransaction = rawTxResult.transactions[0];
-						rawTxResult.transactions.shift();
+                        coreApi.getRawTransactionsWithInputs(pagedTxids).then(function(rawTxResult) {
+                            // first result is always the earliest tx, but doesn't fit into the current paging;
+                            // store it as firstSeenTransaction then remove from list
+                            res.locals.firstSeenTransaction = rawTxResult.transactions[0];
+                            rawTxResult.transactions.shift();
 
-						res.locals.transactions = rawTxResult.transactions;
-						res.locals.txInputsByTransaction = rawTxResult.txInputsByTransaction;
-						res.locals.blockHeightsByTxid = blockHeightsByTxid;
+                            res.locals.transactions = rawTxResult.transactions;
+                            res.locals.txInputsByTransaction = rawTxResult.txInputsByTransaction;
+                            res.locals.blockHeightsByTxid = blockHeightsByTxid;
 
-						var addrGainsByTx = {};
-						var addrLossesByTx = {};
+                            var addrGainsByTx = {};
+                            var addrLossesByTx = {};
 
-						res.locals.addrGainsByTx = addrGainsByTx;
-						res.locals.addrLossesByTx = addrLossesByTx;
+                            res.locals.addrGainsByTx = addrGainsByTx;
+                            res.locals.addrLossesByTx = addrLossesByTx;
 
-						for (var i = 0; i < rawTxResult.transactions.length; i++) {
-							var tx = rawTxResult.transactions[i];
-							var txInputs = rawTxResult.txInputsByTransaction[tx.txid];
+                            for (var i = 0; i < rawTxResult.transactions.length; i++) {
+                                var tx = rawTxResult.transactions[i];
+                                var txInputs = rawTxResult.txInputsByTransaction[tx.txid];
 
-							for (var j = 0; j < tx.vout.length; j++) {
-								if (tx.vout[j].value > 0 && tx.vout[j].scriptPubKey && tx.vout[j].scriptPubKey.addresses && tx.vout[j].scriptPubKey.addresses.includes(address)) {
-									if (addrGainsByTx[tx.txid] == null) {
-										addrGainsByTx[tx.txid] = new Decimal(0);
-									}
+                                for (var j = 0; j < tx.vout.length; j++) {
+                                    if (tx.vout[j].value > 0 && tx.vout[j].scriptPubKey && tx.vout[j].scriptPubKey.addresses && tx.vout[j].scriptPubKey.addresses.includes(address)) {
+                                        if (addrGainsByTx[tx.txid] == null) {
+                                            addrGainsByTx[tx.txid] = new Decimal(0);
+                                        }
 
-									addrGainsByTx[tx.txid] = addrGainsByTx[tx.txid].plus(new Decimal(tx.vout[j].value));
-								}
-							}
+                                        addrGainsByTx[tx.txid] = addrGainsByTx[tx.txid].plus(new Decimal(tx.vout[j].value));
+                                    }
+                                }
 
-							for (var j = 0; j < tx.vin.length; j++) {
-								var txInput = txInputs[j];
-								var vinJ = tx.vin[j];
+                                for (var j = 0; j < tx.vin.length; j++) {
+                                    var txInput = txInputs[j];
+                                    var vinJ = tx.vin[j];
 
-								if (txInput != null) {
-									if (txInput.vout[vinJ.vout] && txInput.vout[vinJ.vout].scriptPubKey && txInput.vout[vinJ.vout].scriptPubKey.addresses && txInput.vout[vinJ.vout].scriptPubKey.addresses.includes(address)) {
-										if (addrLossesByTx[tx.txid] == null) {
-											addrLossesByTx[tx.txid] = new Decimal(0);
-										}
+                                    if (txInput != null) {
+                                        if (txInput.vout[vinJ.vout] && txInput.vout[vinJ.vout].scriptPubKey && txInput.vout[vinJ.vout].scriptPubKey.addresses && txInput.vout[vinJ.vout].scriptPubKey.addresses.includes(address)) {
+                                            if (addrLossesByTx[tx.txid] == null) {
+                                                addrLossesByTx[tx.txid] = new Decimal(0);
+                                            }
 
-										addrLossesByTx[tx.txid] = addrLossesByTx[tx.txid].plus(new Decimal(txInput.vout[vinJ.vout].value));
-									}
-								}
-							}
+                                            addrLossesByTx[tx.txid] = addrLossesByTx[tx.txid].plus(new Decimal(txInput.vout[vinJ.vout].value));
+                                        }
+                                    }
+                                }
 
-							//console.log("tx: " + JSON.stringify(tx));
-							//console.log("txInputs: " + JSON.stringify(txInputs));
-						}
+                                //console.log("tx: " + JSON.stringify(tx));
+                                //console.log("txInputs: " + JSON.stringify(txInputs));
+                            }
 
-						resolve();
+                            resolve();
 
-					}).catch(function(err) {
-						console.log("Error asdgf07uh23: " + err + ", error json: " + JSON.stringify(err));
+                        }).catch(function(err) {
+                            console.log("Error asdgf07uh23: " + err + ", error json: " + JSON.stringify(err));
 
-						reject(err);
-					});
+                            reject(err);
+                        });
+                                                    
+                    }
+                    catch(err) {
+                        res.locals.electrumHistoryError = err;
 
-				}).catch(function(err) {
-					res.locals.electrumHistoryError = err;
+                        console.log("Error 23t07ug2wghefud: " + err + ", error json: " + JSON.stringify(err));
 
-					console.log("Error 23t07ug2wghefud: " + err + ", error json: " + JSON.stringify(err));
+                        reject(err);
+                    }
 
-					reject(err);
-				});
-			}));
+                }).catch(function(err) {
+                    console.log("Error 132r80h32rh: " + err + ", error json: " + JSON.stringify(err));
 
-			promises.push(new Promise(function(resolve, reject) {
-				coreApi.getBlockchainInfo().then(function(getblockchaininfo) {
-					res.locals.getblockchaininfo = getblockchaininfo;
-
-					resolve();
-
-				}).catch(function(err) {
-					console.log("Error 132r80h32rh: " + err + ", error json: " + JSON.stringify(err));
-
-					reject(err);
-				});
-			}));
+                    reject(err);
+                });
+            }));
+                            
 		}
 
 		promises.push(new Promise(function(resolve, reject) {
