@@ -82,6 +82,10 @@
         "longnomp": {
             "name": "LONGNOMP",
             "link": "https://longnomp.crypton.cf"
+        },
+        "zergpool.com": {
+            "name": "ZERGPOOL",
+            "link": "https://zergpool.com/"
         }
     }
 }
