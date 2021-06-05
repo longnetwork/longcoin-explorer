@@ -86,6 +86,10 @@
         "zergpool.com": {
             "name": "ZERGPOOL",
             "link": "https://zergpool.com/"
+        },
+        "PoolMine.xyz": {
+            "name": "POOLMINE",
+            "link": "https://poolmine.xyz/"
         }
     }
 }

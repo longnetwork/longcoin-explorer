@@ -56,9 +56,9 @@ if (config.noInmemoryRpcCache) {
 	txCache = noopCache;
 
 } else {
-	miscCache = createMemoryLruCache(LRU(1000));
-	blockCache = createMemoryLruCache(LRU(1000));
-    txCache = createMemoryLruCache(LRU(4000));     // ~ blockHeing/addressTxLimit 
+	miscCache = createMemoryLruCache(LRU(100 /*1000*/));
+	blockCache = createMemoryLruCache(LRU(100 /*1000*/));
+    txCache = createMemoryLruCache(LRU(400 /*4000*/));     // ~ blockHeing/addressTxLimit 
 }
 
 if (redisCache.active) {
