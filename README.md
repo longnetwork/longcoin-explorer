@@ -16,18 +16,21 @@
 ## Prerequisites
 
 Required options in the longcoin.conf:
-`txindex=1`
-`addressindex=1`
-`timestampindex=1`
-`spentindex=1`
-`maxmempool=300`
-`dbcache=450`
-`maxconnections=125`
-`rpcuser=user`
-`rpcpassword=password`
-`rpcport=8878`
-`rpcthreads=2`
-`rpcworkqueue=1024`
+```inputrc
+txindex=1
+addressindex=1
+timestampindex=1
+spentindex=1
+maxmempool=300
+dbcache=450
+maxconnections=125
+rpcuser=user
+rpcpassword=password
+rpcport=8878
+rpcthreads=2
+rpcworkqueue=1024
+```
+The recommended size of the VDS RAM is at least **4GB** and the size of the swap file is at least **2GB** !
 
 ## Instructions for Installation
 
