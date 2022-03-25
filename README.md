@@ -73,3 +73,12 @@ forever start --id "rpcexplorer" \
 for control: `forever list` 
 for stop: `forever stop rpcexplorer`  
 **set -i option to your external IP, and --max-mem option to control memory consumption**
+
+### LONG development team collects donations to develop mobile wallet participating in blockchain consensus:
+**LONG**: `1jAiYKH7yv7TWdumPNdgh6cZhuxbtGh43`  
+**ETH**: `0x6e04282bb56Dd116d40785ebc3f336b4649A5bCb`  
+**BNB**: `0x6e04282bb56Dd116d40785ebc3f336b4649A5bCb`  
+**DOGE**: `DEBQKxDukNTToE3YvbVMFRkHBxTnUrUrTP`  
+**LTC**: `LafMXhkxUp3GG1TM47GFRkmHmSGLDeCvzg`  
+**BTC**: `19tAZLiVBPNVaGoxq8BTrwDqp3a41zG65b`  
+
