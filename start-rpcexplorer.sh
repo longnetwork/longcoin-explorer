@@ -6,7 +6,7 @@
 
 
 
-#cd /root/rpc-explorer/
+#cd /root/longcoin-explorer/
 
 
 export BTCEXP_IPSTACK_APIKEY="Your API KEY on https://ipstack.com/signup/free"

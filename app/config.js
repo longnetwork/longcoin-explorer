@@ -177,7 +177,8 @@ module.exports = {
                         //                        {name: "Long Community EN", url:"https://bitcointalk.org/index.php?topic=5235729", imgUrl:"/img/logo/bitcointalk.jpg"},
                         //                        {name: "Long Community RU", url:"https://forum.bits.media/index.php?/topic/163664-long-network-%D0%B4%D0%B5%D1%86%D0%B5%D0%BD%D1%82%D1%80%D0%B0%D0%BB%D0%B8%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D0%B0%D1%8F-%D1%81%D0%BE%D1%86-%D1%81%D0%B5%D1%82%D1%8C/", imgUrl:"/img/logo/bitsmedia.jpg"},
                         //                        {name: "Long Support", url:"https://discord.gg/5y2PgmJ", imgUrl:"/img/logo/discords.png"}
-                                                  {name: "Official LONG team", url:"https://t.me/longteam", imgUrl:"/img/logo/telegram.png"}
+                                                  {name: "Official LONG team", url:"https://t.me/longteam", imgUrl:"/img/logo/telegram.png"},
+                                                  {name: "GitHub Official", url:"https://github.com/longnetwork", imgUrl:"/img/logo/github.png"},
                     ]
                 }
             ]
