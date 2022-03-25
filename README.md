@@ -35,8 +35,8 @@ The recommended size of the VDS RAM is at least **4GB** and the size of the swap
 ## Instructions for Installation
 
 ```bash
-git clone https://github.com/longnetwork/rpc-explorer.git
-cd rpc-explorer
+git clone https://github.com/longnetwork/longcoin-explorer.git
+cd longcoin-explorer
 
 sudo apt-get install redis
 
@@ -51,7 +51,7 @@ sudo npm install -g forever
 ## Instructions for Start
 
 ```bash
-cd rpc-explorer
+cd longcoin-explorer
 export BTCEXP_IPSTACK_APIKEY="Your API KEY on https://ipstack.com/signup/free"
 export BTCEXP_REDIS_URL=redis://localhost:6379
 n use 9.11.2 ./bin/cli.js -i 127.0.0.1 -p 8080 -C LONG -H 127.0.0.1 -P 8878 -u user -w password -E standalone
@@ -61,7 +61,7 @@ See http://localhost:8080
 ## Launch as a process (see start-rpcexplorer.sh)
 
 ```bash
-cd rpc-explorer
+cd longcoin-explorer
 export BTCEXP_IPSTACK_APIKEY="Your API KEY on https://ipstack.com/signup/free"
 export BTCEXP_REDIS_URL=redis://localhost:6379
 export BTCEXP_OLD_SPACE_MAX_SIZE=384
