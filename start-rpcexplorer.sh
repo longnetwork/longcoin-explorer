@@ -10,7 +10,7 @@
 
 
 export BTCEXP_IPSTACK_APIKEY="Your API KEY on https://ipstack.com/signup/free"
-
+export BTCEXP_REDIS_URL=redis://localhost:6379
 export BTCEXP_OLD_SPACE_MAX_SIZE=384
 
 forever start --id "rpcexplorer" \
