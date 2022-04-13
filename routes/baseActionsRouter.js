@@ -874,7 +874,10 @@ router.post("/rpc-terminal", function(req, res, next) {
 			parsedParams.push(parseInt(param));
 
 		} else {
-			parsedParams.push(param);
+            let _param; try { _param = JSON.parse(param);} catch(e) {_param=param}
+
+
+			parsedParams.push(_param);
 		}
 	});
 
