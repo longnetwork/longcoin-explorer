@@ -874,7 +874,7 @@ router.post("/rpc-terminal", function(req, res, next) {
 			parsedParams.push(parseInt(param));
 
 		} else {
-            let _param; try { _param = JSON.parse(param);} catch(e) {_param=param}
+            let _param; try { _param = JSON.parse(param);} catch(e) {_param=param;}
 
 
 			parsedParams.push(_param);
@@ -890,6 +890,8 @@ router.post("/rpc-terminal", function(req, res, next) {
 
 		return;
 	}
+
+    console.log("parameters: ", parsedParams);
 
 	client.command([{method:cmd, parameters:parsedParams}], function(err, result, resHeaders) {
 		console.log("Result[1]: " + JSON.stringify(result, null, 4));
