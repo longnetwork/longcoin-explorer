@@ -30,7 +30,7 @@ rpcport=8878
 rpcthreads=2
 rpcworkqueue=1024
 ```
-The recommended size of the VDS RAM is at least **4GB** and the size of the swap file is at least **2GB** !
+The recommended size of the VDS RAM is at least **2GB** and the size of the swap file is at least **1GB** !
 
 ## Instructions for Installation
 
@@ -53,7 +53,6 @@ sudo npm install -g forever
 ```bash
 cd longcoin-explorer
 export BTCEXP_IPSTACK_APIKEY="Your API KEY on https://ipstack.com/signup/free"
-export BTCEXP_REDIS_URL=redis://localhost:6379
 n use 9.11.2 ./bin/cli.js -i 127.0.0.1 -p 8080 -C LONG -H 127.0.0.1 -P 8878 -u user -w password -E standalone
 ```
 See http://localhost:8080
@@ -63,17 +62,25 @@ See http://localhost:8080
 ```bash
 cd longcoin-explorer
 export BTCEXP_IPSTACK_APIKEY="Your API KEY on https://ipstack.com/signup/free"
+
 export BTCEXP_REDIS_URL=redis://localhost:6379
+
 export BTCEXP_OLD_SPACE_MAX_SIZE=384
+
+export BTCEXP_RPC_CONCURRENCY=2
+export BTCEXP_NO_INMEMORY_RPC_CACHE=true
+
 forever start --id "rpcexplorer" \
--a -l ./rpcexplorer.log -o ./rpcexplorer.log -e ./rpcexplorer.log \
+-a -l ./rpcexplorer.log \
 --minUptime 10000 --spinSleepTime 10000 \
--c "n use 9.11.2" ./bin/cli.js --max-mem 384 -i 127.0.0.1 -p 8080 -C LONG -H 127.0.0.1 -P 8878 -u user -w password -E standalone
+-c "n use 9.11.2" --max-old-space-size=$BTCEXP_OLD_SPACE_MAX_SIZE \
+./bin/cli.js --max-mem $BTCEXP_OLD_SPACE_MAX_SIZE -i 127.0.0.1 -p 8080 -C LONG -H 127.0.0.1 -P 8878 -u user -w password -E standalone
 ```
 for control: `forever list` 
 for stop: `forever stop rpcexplorer`  
-**set -i option to your external IP, and --max-mem option to control memory consumption**
-
+_**set -i option to your external IP, and $BTCEXP_OLD_SPACE_MAX_SIZE variable to control memory consumption**_
+<br>
+<br>
 ### LONG development team collects donations to develop mobile wallet participating in blockchain consensus:
 **LONG**: `1jAiYKH7yv7TWdumPNdgh6cZhuxbtGh43`  
 **ETH**: `0x6e04282bb56Dd116d40785ebc3f336b4649A5bCb`  
