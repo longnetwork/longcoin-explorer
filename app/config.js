@@ -112,14 +112,14 @@ module.exports = {
         "sendfrom",
         "sendmany",
         "sendtoaddress",
-        "sendrawtransaction",
+        /*"sendrawtransaction",*/
         "fundrawtransaction",
         "setaccount",
         "setban",
         "setnetworkactive",
         "signmessage",
         "signmessagewithprivatekey",
-        "signrawtransaction",
+        /*"signrawtransaction",*/
         "stop",
         "submitblock",
         "prioritisetransaction",
