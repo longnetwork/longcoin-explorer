@@ -112,7 +112,7 @@ module.exports = {
         "sendfrom",
         "sendmany",
         "sendtoaddress",
-        "sendrawtransaction",
+        /*"sendrawtransaction",*/
         "fundrawtransaction",
         "setaccount",
         "setban",
