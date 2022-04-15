@@ -891,6 +891,31 @@ router.post("/rpc-terminal", function(req, res, next) {
 		return;
 	}
 
+    if(cmd=="signrawtransactionwithkey") { // можно пропустит signrawtransaction только если предоставлен privkey
+       // signrawtransaction "hexstring" ( [{"txid":"id","vout":n,"scriptPubKey":"hex","redeemScript":"hex"},...] ["privatekey1",...] sighashtype )
+       // signrawtransactionwithkey "hexstring" ["privatekey1",...] ( [{"txid":"id","vout":n,"scriptPubKey":"hex","redeemScript":"hex"},...] sighashtype )
+       if(parsedParams.length<2 || !(parsedParams[1] instanceof Array) || parsedParams[1].length<1 || typeof(parsedParams[1][0])!='string') {
+            res.write("Sorry, this RPC command requires a private keys", function() {
+			res.end();
+		});
+
+		next();
+
+		return;
+       }
+       
+       // Преобразовываем в signrawtransaction
+       cmd="signrawtransaction"
+       
+       let p=[];
+       p.push(parsedParams[0]); // "hexstring"
+       p.push(parsedParams[2] || null ); // [{"txid":"id","vout":n,"scriptPubKey":"hex","redeemScript":"hex"},...]
+       p.push(parsedParams[1]); 
+       p.push(parsedParams[3] || "ALL"); 
+
+       parsedParams=p;
+    }
+
     console.log("command: "+cmd, "parameters: ", parsedParams);
 
 	client.command([{method:cmd, parameters:parsedParams}], function(err, result, resHeaders) {

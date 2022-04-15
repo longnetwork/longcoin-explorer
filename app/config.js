@@ -112,14 +112,15 @@ module.exports = {
         "sendfrom",
         "sendmany",
         "sendtoaddress",
-        /*"sendrawtransaction",*/
+        "sendrawtransaction",
         "fundrawtransaction",
         "setaccount",
         "setban",
         "setnetworkactive",
         "signmessage",
         "signmessagewithprivatekey",
-        /*"signrawtransaction",*/
+        "signrawtransaction",
+        /*"signrawtransactionwithkey",*/ // Это симулятор signrawtransaction чтобы не списали с кошелька эксплорера из вне (key обязателен)
         "stop",
         "submitblock",
         "prioritisetransaction",
