@@ -232,6 +232,8 @@ router.get("/peers", function(req, res, next) {
 	});
 });
 
+
+/*
 router.post("/connect", function(req, res, next) {
 	var host = req.body.host;
 	var port = req.body.port;
@@ -292,6 +294,7 @@ router.get("/changeSetting", function(req, res, next) {
 
 	res.redirect(req.headers.referer);
 });
+*/
 
 router.get("/blocks", function(req, res, next) {
 	var limit = config.site.browseBlocksPageSize;
