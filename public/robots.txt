@@ -1,8 +1,12 @@
 User-agent: *
+
 Disallow: /address/*
 Disallow: /block/*
 Disallow: /tx/*
 Disallow: /rpc*
+Disallow: /block-height/*
+Disallow: /blocks*
+
 Disallow: /tx-stats
 Disallow: /peers
 Disallow: /unconfirmed-tx
