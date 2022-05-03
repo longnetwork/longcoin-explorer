@@ -284,7 +284,7 @@ router.get("/disconnect", function(req, res, next) {
 
 	res.redirect("/");
 });
-
+*/
 router.get("/changeSetting", function(req, res, next) {
 	if (req.query.name) {
 		req.session[req.query.name] = req.query.value;
@@ -294,7 +294,7 @@ router.get("/changeSetting", function(req, res, next) {
 
 	res.redirect(req.headers.referer);
 });
-*/
+
 
 router.get("/blocks", function(req, res, next) {
 	var limit = config.site.browseBlocksPageSize;
