@@ -11,7 +11,7 @@
 
 export BTCEXP_IPSTACK_APIKEY="Your API KEY on https://ipstack.com/signup/free"
 export BTCEXP_REDIS_URL=redis://localhost:6379
-export BTCEXP_OLD_SPACE_MAX_SIZE=128
+export BTCEXP_OLD_SPACE_MAX_SIZE=384
 
 export BTCEXP_RPC_CONCURRENCY=2
 export BTCEXP_NO_INMEMORY_RPC_CACHE=true
